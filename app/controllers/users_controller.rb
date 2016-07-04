@@ -16,14 +16,19 @@ class UsersController < ApplicationController
         u.resources_ids << Resource.where(name: resource).first.id
         u.resources_ids.uniq!
         if u.save
-          s = User.where(slack_id: user).first.resources_ids.collect { |s| Resource.find(s).name }
-          "You are subscribed on #{s.join(',')}"
+          [{
+               color: "#36a64f",
+               title: "You are subscribed on:",
+               text: (User.where(slack_id: user).first.resources_ids.collect { |s| Resource.find(s).name }).join("\n")
+           }]
         end
       else
-        "Resource #{resource} doesn't exists!"
+        [{ color: "#f50000",
+           title: "Resource #{resource} doesn't exists!" }]
       end
     else
-      "User #{user} doesn't exists!"
+      [{ color: "#f50000",
+         title: "User #{user} doesn't exists!" }]
     end
   end
   def unsubscribe_user(user, resource)
@@ -34,29 +39,45 @@ class UsersController < ApplicationController
         if u.save
           s = User.where(slack_id: user).first.resources_ids.collect { |s| Resource.find(s).name }
           if s.empty?
-            "You haven't subscribes"
+            [{ color: "#f50000",
+               title: "You haven't subscribes"
+             }]
           else
-            "You are subscribed on #{s.join(',')}"
+            [{ color: "#36a64f",
+               title: "You are subscribed on:",
+               text: s.join("\n")
+             }]
           end
         end
       else
-        "Resource doesn't exists or you're not subscribed on the resource"
+        [{ color: "#f50000",
+           title: "Resource doesn't exists or you're not subscribed on the resource"
+         }]
       end
     else
-      "User #{user} doesn't exists!"
+      [{ color: "#f50000",
+         title: "User #{user} doesn't exists!"
+       }]
     end
   end
   def show_all_users
-    users = User.all.collect { |u| "<@#{u.slack_id}> #{u.slack_id}" }
-    users.join("\n")
+    [{ color: "#36a64f",
+       title: "Users list",
+       text: (User.all.collect { |u| "<@#{u.slack_id}> #{u.slack_id}" }).join("\n")
+     }]
   end
   def show_subscribes(user)
     if User.where(slack_id: user).exists?
       s = User.where(slack_id: user).first.resources_ids.collect { |s| Resource.find(s).name }
       if s.empty?
-        "You haven't subscribes"
+        [{ color: "#f50000",
+           title: "You haven't subscribes"
+         }]
       else
-        "You are subscribed on #{s.join(',')}"
+        [{ color: "#36a64f",
+           title: "Here is a list of your subscribes",
+           text: s.join("\n")
+         }]
       end
     end
   end

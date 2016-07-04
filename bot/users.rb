@@ -20,18 +20,34 @@ class QABot < SlackRubyBot::Bot
   end
 
   match /Subscribe me on (?<resource>.*)/ do |client, data, match|
-    client.say(channel: data.channel, text: UsersController.new.subscribe_user(data[:user], match[:resource]))
+    client.web_client.chat_postMessage(
+        channel: data.channel,
+        as_user: true,
+        attachments: UsersController.new.subscribe_user(data[:user], match[:resource])
+    )
   end
 
   match /Unsubscribe me from (?<resource>.*)/ do |client, data, match|
-    client.say(channel: data.channel, text: UsersController.new.unsubscribe_user(data[:user], match[:resource]))
+    client.web_client.chat_postMessage(
+        channel: data.channel,
+        as_user: true,
+        attachments: UsersController.new.unsubscribe_user(data[:user], match[:resource])
+    )
   end
 
   command 'Show me all users' do |client, data|
-    client.say(channel: data.channel, text: UsersController.new.show_all_users)
+    client.web_client.chat_postMessage(
+        channel: data.channel,
+        as_user: true,
+        attachments: UsersController.new.show_all_users
+    )
   end
 
   command 'Show my subscribes' do |client, data|
-    client.say(channel: data.channel, text: UsersController.new.show_subscribes(data[:user]))
+    client.web_client.chat_postMessage(
+        channel: data.channel,
+        as_user: true,
+        attachments: UsersController.new.show_subscribes(data[:user])
+    )
   end
 end
