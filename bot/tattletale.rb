@@ -1,5 +1,6 @@
 $:.unshift File.dirname(__FILE__)
 require 'bot'
+require 'users'
 
 Thread.abort_on_exception = true
 
